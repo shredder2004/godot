@@ -36,6 +36,7 @@
 #include "core/os/keyboard.h"
 #include "core/project_settings.h"
 #include "editor/animation_track_editor.h"
+#include "editor/editor_scale.h"
 #include "editor/editor_settings.h"
 
 // For onion skinning.
@@ -1091,8 +1092,6 @@ void AnimationPlayerEditor::_animation_key_editor_seek(float p_pos, bool p_drag)
 
 	if (!player->has_animation(player->get_assigned_animation()))
 		return;
-
-	Ref<Animation> anim = player->get_animation(player->get_assigned_animation());
 
 	updating = true;
 	frame->set_value(Math::stepify(p_pos, _get_editor_step()));

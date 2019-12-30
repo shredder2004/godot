@@ -75,6 +75,7 @@
 #include "editor/doc/doc_data_class_path.gen.h"
 #include "editor/editor_node.h"
 #include "editor/editor_settings.h"
+#include "editor/progress_dialog.h"
 #include "editor/project_manager.h"
 #endif
 
@@ -285,8 +286,8 @@ void Main::print_help(const char *p_binary) {
 	OS::get_singleton()->print("  -s, --script <script>            Run a script.\n");
 	OS::get_singleton()->print("  --check-only                     Only parse for errors and quit (use with --script).\n");
 #ifdef TOOLS_ENABLED
-	OS::get_singleton()->print("  --export <target>                Export the project using the given export target. Export only main pack if path ends with .pck or .zip.\n");
-	OS::get_singleton()->print("  --export-debug <target>          Like --export, but use debug template.\n");
+	OS::get_singleton()->print("  --export <target> <path>         Export the project using the given export target. Export only main pack if path ends with .pck or .zip. <path> is relative to the project directory.\n");
+	OS::get_singleton()->print("  --export-debug <target> <path>   Like --export, but use debug template.\n");
 	OS::get_singleton()->print("  --doctool <path>                 Dump the engine API reference to the given <path> in XML format, merging if existing files are found.\n");
 	OS::get_singleton()->print("  --no-docbase                     Disallow dumping the base types (used with --doctool).\n");
 	OS::get_singleton()->print("  --build-solutions                Build the scripting solutions (e.g. for C# projects).\n");
@@ -1125,6 +1126,8 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 	OS::get_singleton()->set_low_processor_usage_mode(GLOBAL_DEF("application/run/low_processor_mode", false));
 	OS::get_singleton()->set_low_processor_usage_mode_sleep_usec(GLOBAL_DEF("application/run/low_processor_mode_sleep_usec", 6900)); // Roughly 144 FPS
 	ProjectSettings::get_singleton()->set_custom_property_info("application/run/low_processor_mode_sleep_usec", PropertyInfo(Variant::INT, "application/run/low_processor_mode_sleep_usec", PROPERTY_HINT_RANGE, "0,33200,1,or_greater")); // No negative numbers
+
+	GLOBAL_DEF("display/window/ios/hide_home_indicator", true);
 
 	Engine::get_singleton()->set_frame_delay(frame_delay);
 

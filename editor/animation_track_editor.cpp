@@ -266,7 +266,6 @@ public:
 				else
 					undo_redo->create_action(TTR("Anim Change Call"));
 
-				Variant prev = animation->track_get_key_value(track, key);
 				setting = true;
 				undo_redo->add_do_method(animation.ptr(), "track_set_key_value", track, key, d_new);
 				undo_redo->add_undo_method(animation.ptr(), "track_set_key_value", track, key, d_old);
@@ -4580,7 +4579,7 @@ void AnimationTrackEditor::_new_track_property_selected(String p_name) {
 			bool valid;
 			subindices = _get_bezier_subindices_for_type(h.type, &valid);
 			if (!valid) {
-				EditorNode::get_singleton()->show_warning("Invalid track for Bezier (no suitable sub-properties)");
+				EditorNode::get_singleton()->show_warning(TTR("Invalid track for Bezier (no suitable sub-properties)"));
 				return;
 			}
 		}

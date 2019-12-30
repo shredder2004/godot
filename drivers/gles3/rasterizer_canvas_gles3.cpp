@@ -419,6 +419,7 @@ void RasterizerCanvasGLES3::_draw_polygon(const int *p_indices, int p_index_coun
 	}
 
 	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void RasterizerCanvasGLES3::_draw_generic(GLuint p_primitive, int p_vertex_count, const Vector2 *p_vertices, const Vector2 *p_uvs, const Color *p_colors, bool p_singlecolor) {
@@ -471,6 +472,7 @@ void RasterizerCanvasGLES3::_draw_generic(GLuint p_primitive, int p_vertex_count
 	storage->frame.canvas_draw_commands++;
 
 	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void RasterizerCanvasGLES3::_draw_generic_indices(GLuint p_primitive, const int *p_indices, int p_index_count, int p_vertex_count, const Vector2 *p_vertices, const Vector2 *p_uvs, const Color *p_colors, bool p_singlecolor) {
@@ -543,6 +545,7 @@ void RasterizerCanvasGLES3::_draw_generic_indices(GLuint p_primitive, const int 
 	storage->frame.canvas_draw_commands++;
 
 	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void RasterizerCanvasGLES3::_draw_gui_primitive(int p_points, const Vector2 *p_vertices, const Color *p_colors, const Vector2 *p_uvs) {
@@ -1413,8 +1416,6 @@ void RasterizerCanvasGLES3::canvas_render_items(Item *p_item_list, int p_z, cons
 				glActiveTexture(GL_TEXTURE0 + storage->config.max_texture_image_units - 1);
 				glBindTexture(GL_TEXTURE_2D, skeleton->texture);
 				state.using_skeleton = true;
-				state.canvas_shader.set_uniform(CanvasShaderGLES3::SKELETON_TRANSFORM, state.skeleton_transform);
-				state.canvas_shader.set_uniform(CanvasShaderGLES3::SKELETON_TRANSFORM_INVERSE, state.skeleton_transform_inverse);
 			} else {
 				state.using_skeleton = false;
 			}
@@ -1600,6 +1601,11 @@ void RasterizerCanvasGLES3::canvas_render_items(Item *p_item_list, int p_z, cons
 
 		state.final_transform = ci->final_transform;
 		state.extra_matrix = Transform2D();
+
+		if (state.using_skeleton) {
+			state.canvas_shader.set_uniform(CanvasShaderGLES3::SKELETON_TRANSFORM, state.skeleton_transform);
+			state.canvas_shader.set_uniform(CanvasShaderGLES3::SKELETON_TRANSFORM_INVERSE, state.skeleton_transform_inverse);
+		}
 
 		state.canvas_shader.set_uniform(CanvasShaderGLES3::FINAL_MODULATE, state.canvas_item_modulate);
 		state.canvas_shader.set_uniform(CanvasShaderGLES3::MODELVIEW_MATRIX, state.final_transform);
@@ -1884,9 +1890,20 @@ void RasterizerCanvasGLES3::canvas_light_shadow_buffer_update(RID p_buffer, cons
 			}
 
 			state.canvas_shadow_shader.set_uniform(CanvasShadowShaderGLES3::WORLD_MATRIX, instance->xform_cache);
-			if (cull != instance->cull_cache) {
 
-				cull = instance->cull_cache;
+			VS::CanvasOccluderPolygonCullMode transformed_cull_cache = instance->cull_cache;
+
+			if (transformed_cull_cache != VS::CANVAS_OCCLUDER_POLYGON_CULL_DISABLED &&
+					(p_light_xform.basis_determinant() * instance->xform_cache.basis_determinant()) < 0) {
+				transformed_cull_cache =
+						transformed_cull_cache == VS::CANVAS_OCCLUDER_POLYGON_CULL_CLOCKWISE ?
+								VS::CANVAS_OCCLUDER_POLYGON_CULL_COUNTER_CLOCKWISE :
+								VS::CANVAS_OCCLUDER_POLYGON_CULL_CLOCKWISE;
+			}
+
+			if (cull != transformed_cull_cache) {
+
+				cull = transformed_cull_cache;
 				switch (cull) {
 					case VS::CANVAS_OCCLUDER_POLYGON_CULL_DISABLED: {
 

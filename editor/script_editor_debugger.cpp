@@ -35,9 +35,11 @@
 #include "core/ustring.h"
 #include "editor/plugins/canvas_item_editor_plugin.h"
 #include "editor/plugins/spatial_editor_plugin.h"
+#include "editor_log.h"
 #include "editor_network_profiler.h"
 #include "editor_node.h"
 #include "editor_profiler.h"
+#include "editor_scale.h"
 #include "editor_settings.h"
 #include "main/performance.h"
 #include "property_editor.h"
@@ -2247,7 +2249,7 @@ ScriptEditorDebugger::ScriptEditorDebugger(EditorNode *p_editor) {
 	add_constant_override("margin_right", -EditorNode::get_singleton()->get_gui_base()->get_stylebox("BottomPanelDebuggerOverride", "EditorStyles")->get_margin(MARGIN_RIGHT));
 
 	ppeer = Ref<PacketPeerStream>(memnew(PacketPeerStream));
-	ppeer->set_input_buffer_max_size(1024 * 1024 * 8); //8mb should be enough
+	ppeer->set_input_buffer_max_size((1024 * 1024 * 8) - 4); // 8 MiB should be enough, minus 4 bytes for separator.
 	editor = p_editor;
 	editor->get_inspector()->connect("object_id_selected", this, "_scene_tree_property_select_object");
 

@@ -31,8 +31,10 @@
 #include "editor_properties.h"
 
 #include "editor/editor_resource_preview.h"
+#include "editor/filesystem_dock.h"
 #include "editor_node.h"
 #include "editor_properties_array_dict.h"
+#include "editor_scale.h"
 #include "scene/main/viewport.h"
 
 ///////////////////// NULL /////////////////////////
@@ -979,8 +981,6 @@ void EditorPropertyEasing::_draw_easing() {
 	RID ci = easing_draw->get_canvas_item();
 
 	Size2 s = easing_draw->get_size();
-	Rect2 r(Point2(), s);
-	r = r.grow(3);
 
 	const int points = 48;
 

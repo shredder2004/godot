@@ -32,6 +32,8 @@
 
 #include "core/os/file_access.h"
 #include "core/version.h"
+#include "editor/editor_scale.h"
+#include "scene/gui/progress_bar.h"
 
 void ThemeEditor::edit(const Ref<Theme> &p_theme) {
 
@@ -870,7 +872,7 @@ ThemeEditor::ThemeEditor() {
 	add_del_dialog->get_ok()->connect("pressed", this, "_dialog_cbk");
 
 	file_dialog = memnew(EditorFileDialog);
-	file_dialog->add_filter("*.theme ; Theme File");
+	file_dialog->add_filter("*.theme ; " + TTR("Theme File"));
 	add_child(file_dialog);
 	file_dialog->connect("file_selected", this, "_save_template_cbk");
 }
@@ -908,7 +910,7 @@ ThemeEditorPlugin::ThemeEditorPlugin(EditorNode *p_node) {
 
 	editor = p_node;
 	theme_editor = memnew(ThemeEditor);
-	theme_editor->set_custom_minimum_size(Size2(0, 200));
+	theme_editor->set_custom_minimum_size(Size2(0, 200) * EDSCALE);
 
 	button = editor->add_bottom_panel_item(TTR("Theme"), theme_editor);
 	button->hide();

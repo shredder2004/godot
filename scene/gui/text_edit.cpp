@@ -1946,6 +1946,7 @@ void TextEdit::indent_right() {
 
 	// Ignore if the cursor is not past the first column.
 	if (is_selection_active() && get_selection_to_column() == 0) {
+		selection_offset = 0;
 		end_line--;
 	}
 
@@ -4438,7 +4439,6 @@ int TextEdit::get_line_wrap_index_at_col(int p_line, int p_column) const {
 }
 
 void TextEdit::cursor_set_column(int p_col, bool p_adjust_viewport) {
-
 	if (p_col < 0)
 		p_col = 0;
 
@@ -5178,11 +5178,16 @@ void TextEdit::cut() {
 		OS::get_singleton()->set_clipboard(clipboard);
 		cursor_set_line(cursor.line);
 		cursor_set_column(0);
-		_remove_text(cursor.line, 0, cursor.line, text[cursor.line].length());
 
-		backspace_at_cursor();
+		if (cursor.line == 0 && get_line_count() > 1) {
+			_remove_text(cursor.line, 0, cursor.line + 1, 0);
+		} else {
+			_remove_text(cursor.line, 0, cursor.line, text[cursor.line].length());
+			backspace_at_cursor();
+			cursor_set_line(cursor.line + 1);
+		}
+
 		update();
-		cursor_set_line(cursor.line + 1);
 		cut_copy_line = clipboard;
 
 	} else {
@@ -7141,6 +7146,7 @@ TextEdit::TextEdit() {
 	max_chars = 0;
 	clear();
 	wrap_enabled = false;
+	wrap_at = 0;
 	wrap_right_offset = 10;
 	set_focus_mode(FOCUS_ALL);
 	syntax_highlighter = NULL;

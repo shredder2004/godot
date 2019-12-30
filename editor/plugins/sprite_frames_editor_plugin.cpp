@@ -32,8 +32,10 @@
 
 #include "core/io/resource_loader.h"
 #include "core/project_settings.h"
+#include "editor/editor_scale.h"
 #include "editor/editor_settings.h"
 #include "scene/3d/sprite_3d.h"
+#include "scene/gui/center_container.h"
 
 void SpriteFramesEditor::_gui_input(Ref<InputEvent> p_event) {
 }
@@ -202,7 +204,7 @@ void SpriteFramesEditor::_prepare_sprite_sheet(const String &p_file) {
 
 	Ref<Resource> texture = ResourceLoader::load(p_file);
 	if (!texture.is_valid()) {
-		EditorNode::get_singleton()->show_warning("Unable to load images");
+		EditorNode::get_singleton()->show_warning(TTR("Unable to load images"));
 		ERR_FAIL_COND(!texture.is_valid());
 	}
 	if (texture != split_sheet_preview->get_texture()) {
@@ -403,7 +405,6 @@ void SpriteFramesEditor::_up_pressed() {
 	sel = to_move;
 	sel -= 1;
 
-	Ref<Texture> r = frames->get_frame(edited_anim, to_move);
 	undo_redo->create_action(TTR("Delete Resource"));
 	undo_redo->add_do_method(frames, "set_frame", edited_anim, to_move, frames->get_frame(edited_anim, to_move - 1));
 	undo_redo->add_do_method(frames, "set_frame", edited_anim, to_move - 1, frames->get_frame(edited_anim, to_move));
@@ -428,7 +429,6 @@ void SpriteFramesEditor::_down_pressed() {
 	sel = to_move;
 	sel += 1;
 
-	Ref<Texture> r = frames->get_frame(edited_anim, to_move);
 	undo_redo->create_action(TTR("Delete Resource"));
 	undo_redo->add_do_method(frames, "set_frame", edited_anim, to_move, frames->get_frame(edited_anim, to_move + 1));
 	undo_redo->add_do_method(frames, "set_frame", edited_anim, to_move + 1, frames->get_frame(edited_anim, to_move));

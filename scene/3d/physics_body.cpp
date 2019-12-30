@@ -1014,7 +1014,7 @@ void RigidBody::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::REAL, "gravity_scale", PROPERTY_HINT_RANGE, "-128,128,0.01"), "set_gravity_scale", "get_gravity_scale");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "custom_integrator"), "set_use_custom_integrator", "is_using_custom_integrator");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "continuous_cd"), "set_use_continuous_collision_detection", "is_using_continuous_collision_detection");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "contacts_reported"), "set_max_contacts_reported", "get_max_contacts_reported");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "contacts_reported", PROPERTY_HINT_RANGE, "0,64,1,or_greater"), "set_max_contacts_reported", "get_max_contacts_reported");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "contact_monitor"), "set_contact_monitor", "is_contact_monitor_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "sleeping"), "set_sleeping", "is_sleeping");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "can_sleep"), "set_can_sleep", "is_able_to_sleep");
@@ -1552,6 +1552,14 @@ bool PhysicalBone::JointData::_get(const StringName &p_name, Variant &r_ret) con
 }
 
 void PhysicalBone::JointData::_get_property_list(List<PropertyInfo> *p_list) const {
+}
+
+void PhysicalBone::apply_central_impulse(const Vector3 &p_impulse) {
+	PhysicsServer::get_singleton()->body_apply_central_impulse(get_rid(), p_impulse);
+}
+
+void PhysicalBone::apply_impulse(const Vector3 &p_pos, const Vector3 &p_impulse) {
+	PhysicsServer::get_singleton()->body_apply_impulse(get_rid(), p_pos, p_impulse);
 }
 
 bool PhysicalBone::PinJointData::_set(const StringName &p_name, const Variant &p_value, RID j) {
@@ -2216,6 +2224,9 @@ void PhysicalBone::_direct_state_changed(Object *p_state) {
 }
 
 void PhysicalBone::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("apply_central_impulse", "impulse"), &PhysicalBone::apply_central_impulse);
+	ClassDB::bind_method(D_METHOD("apply_impulse", "position", "impulse"), &PhysicalBone::apply_impulse);
+
 	ClassDB::bind_method(D_METHOD("_direct_state_changed"), &PhysicalBone::_direct_state_changed);
 
 	ClassDB::bind_method(D_METHOD("set_joint_type", "joint_type"), &PhysicalBone::set_joint_type);

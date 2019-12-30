@@ -34,6 +34,7 @@
 #include "core/os/file_access.h"
 #include "core/os/input.h"
 #include "core/os/keyboard.h"
+#include "editor/editor_scale.h"
 #include "editor/editor_settings.h"
 #include "scene/2d/skeleton_2d.h"
 
@@ -1444,7 +1445,7 @@ Polygon2DEditor::Polygon2DEditor(EditorNode *p_editor) :
 	uv_mode_hb->add_child(uv_icon_zoom);
 	uv_zoom = memnew(HSlider);
 	uv_zoom->set_min(0.01);
-	uv_zoom->set_max(4);
+	uv_zoom->set_max(16);
 	uv_zoom->set_value(1);
 	uv_zoom->set_step(0.01);
 	uv_zoom->set_v_size_flags(SIZE_SHRINK_CENTER);
